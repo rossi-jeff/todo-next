@@ -5,18 +5,15 @@ import SignInDialog from '@/components/sign-in-dialog'
 import TopBar from '@/components/top-bar'
 import { baseUrl } from '@/lib/base-url'
 import { fetcher } from '@/lib/fetcher'
-import useStorage, {
-	SessionData,
-	blankSession,
-	sessionKey,
-} from '@/lib/session-storage'
+import useStorage, { SessionData, sessionKey } from '@/lib/session-storage'
 import { Todo } from '@/types/todo.type'
 import { User } from '@/types/user.type'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { buildHeaders } from '../lib/build-headers'
 import { randomUserPW } from '../lib/random-user'
-import { Email } from '../../archive/contact-tracing-api/src/email/email.entity'
+import TodoCard from '../components/todo-card'
+import UserButtons from '../components/user-buttons'
 
 export default function Home() {
 	const { getItem, setItem, removeItem } = useStorage()
@@ -24,6 +21,39 @@ export default function Home() {
 	const [session, setSession] = useState<SessionData>(getItem(sessionKey))
 	const [todos, setTodos] = useState<Todo[]>([])
 	const [currentUser, setCurrentUser] = useState<User | null>(null)
+
+	useEffect(() => {
+		const loadTodos = () => {
+			fetch(`${baseUrl}/todo`, {
+				method: 'GET',
+				headers: buildHeaders(session),
+			})
+				.then((result) => result.json())
+				.then((result) => {
+					if (result && result.length) {
+						setTodos(result)
+					}
+				})
+		}
+
+		const loadCurrentUser = () => {
+			fetch(`${baseUrl}/user/current`, {
+				method: 'GET',
+				headers: buildHeaders(session),
+			})
+				.then((result) => result.json())
+				.then((result) => {
+					if (result && result.Id) {
+						setCurrentUser(result)
+					}
+				})
+		}
+
+		if (session.Token) {
+			loadTodos()
+			loadCurrentUser()
+		}
+	}, [session])
 
 	if (error) return <div>{error}</div>
 
@@ -92,9 +122,9 @@ export default function Home() {
 				const { Token } = result
 				if (Token) {
 					setItem(sessionKey, { UserName, Token, SignedIn: true })
+					setSession(getItem(sessionKey))
 					hideSignIn()
-				} else setItem(sessionKey, blankSession)
-				setSession(getItem(sessionKey))
+				} else signOut()
 			})
 	}
 
@@ -115,15 +145,17 @@ export default function Home() {
 				const { Token } = result
 				if (Token) {
 					setItem(sessionKey, { UserName, Token, SignedIn: true })
+					setSession(getItem(sessionKey))
 					hideRandom()
-				} else setItem(sessionKey, blankSession)
-				setSession(getItem(sessionKey))
+				} else signOut()
 			})
 	}
 
 	const signOut = () => {
-		setItem(sessionKey, blankSession)
+		removeItem(sessionKey)
 		setSession(getItem(sessionKey))
+		setTodos([])
+		setCurrentUser(null)
 	}
 
 	return (
@@ -144,7 +176,12 @@ export default function Home() {
 					randomSignIn={randomSignIn}
 				/>
 			</div>
-			<div>Todo App</div>
+			<div>
+				{currentUser && <UserButtons currentUser={currentUser} />}
+				{todos.map((todo) => (
+					<TodoCard key={todo.Id} todo={todo} />
+				))}
+			</div>
 		</main>
 	)
 }
