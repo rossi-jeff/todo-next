@@ -31,23 +31,47 @@ export default function Home() {
 
   const userNames: string[] = data ? getUserNames(data) : [];
 
-  const showRegister = () => {};
+  const openDialog = (id: string) => {
+    const overlay = document.getElementById("modal-overlay");
+    const dialog = document.getElementById(id);
+    if (overlay && dialog) {
+      overlay.classList.add("open");
+      dialog.classList.add("open");
+    }
+  };
 
-  const hideRegister = () => {};
+  const closeDialog = (id: string) => {
+    const overlay = document.getElementById("modal-overlay");
+    const dialog = document.getElementById(id);
+    if (overlay && dialog) {
+      overlay.classList.remove("open");
+      dialog.classList.remove("open");
+    }
+  };
 
-  const register = () => {};
+  const showRegister = () => openDialog("register-dialog");
 
-  const showSignIn = () => {};
+  const hideRegister = () => closeDialog("register-dialog");
 
-  const hideSignIn = () => {};
+  const register = (ev: any) => {
+    console.log("register", ev);
+  };
 
-  const signIn = () => {};
+  const showSignIn = () => openDialog("sign-in-dialog");
 
-  const showRandom = () => {};
+  const hideSignIn = () => closeDialog("sign-in-dialog");
 
-  const hideRandom = () => {};
+  const signIn = (ev: any) => {
+    console.log("signIn", ev);
+  };
 
-  const randomSignIn = () => {};
+  const showRandom = () => openDialog("random-dialog");
+
+  const hideRandom = () => closeDialog("random-dialog");
+
+  const randomSignIn = (ev: any) => {
+    console.log("randomSignIn", ev);
+  };
 
   const signOut = () => {};
 

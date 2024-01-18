@@ -6,10 +6,49 @@ h1 {
   @apply text-2xl font-bold;
 }
 
-button {
-  @apply text-sm px-2 py-1 border border-black rounded;
+h2 {
+  @apply text-xl font-bold;
+}
+
+h3 {
+  @apply text-lg font-bold;
+}
+
+button,
+input,
+select,
+textarea {
+  @apply text-sm px-2 py-1 border border-black bg-white text-black rounded;
+}
+
+label {
+  @apply font-bold;
 }
 
 button:hover {
   @apply bg-slate-200;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 overflow-y-auto w-full h-full hidden bg-slate-600 bg-opacity-70 z-30;
+}
+
+.dialog {
+  @apply relative top-20 w-72 mx-auto z-40 hidden bg-white p-2 rounded;
+}
+
+.dialog-header {
+  @apply px-2 py-1 bg-black text-white;
+}
+
+.dialog-content {
+  @apply py-2;
+}
+
+.field {
+  @apply mb-2;
+}
+
+.open {
+  @apply block;
 }

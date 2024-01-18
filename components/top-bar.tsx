@@ -13,6 +13,10 @@ export default function TopBar({
   showRandom: Function;
   signOut: Function;
 }) {
+  const showRegisterClicked = () => showRegister();
+  const showSignInClicked = () => showSignIn();
+  const showRandomClicked = () => showRandom();
+  const signOutClicked = () => signOut();
   return (
     <div id="top-bar">
       <div className="flex justify-between p-2">
@@ -20,15 +24,15 @@ export default function TopBar({
         {session.SignedIn ? (
           <div className="flex">
             <div className="mr-2">{session.UserName}</div>
-            <button onClick={signOut()}>Sign Out</button>
+            <button onClick={signOutClicked}>Sign Out</button>
           </div>
         ) : (
           <div className="flex">
-            <button onClick={showRegister()}>Register</button>
-            <button className="mx-2" onClick={showSignIn()}>
+            <button onClick={showRegisterClicked}>Register</button>
+            <button className="mx-2" onClick={showSignInClicked}>
               Sign In
             </button>
-            <button onClick={showRandom()}>Random</button>
+            <button onClick={showRandomClicked}>Random</button>
           </div>
         )}
       </div>
