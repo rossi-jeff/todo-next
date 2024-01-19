@@ -2,53 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+body,
+main {
+	@apply m-0 p-0 bg-teal-500 text-zinc-900;
+}
+
 h1 {
-  @apply text-2xl font-bold;
+	@apply text-2xl font-bold;
 }
 
 h2 {
-  @apply text-xl font-bold;
+	@apply text-xl font-bold;
 }
 
 h3 {
-  @apply text-lg font-bold;
+	@apply text-lg font-bold;
 }
 
-button,
+a {
+	@apply font-bold text-teal-400;
+}
+
+a:hover {
+	@apply underline;
+}
+
 input,
 select,
 textarea {
-  @apply text-sm px-2 py-1 border border-black bg-white text-black rounded;
+	@apply text-sm px-2 py-1 border border-black bg-white text-black rounded;
 }
 
 label {
-  @apply font-bold;
+	@apply font-bold;
+}
+
+button {
+	@apply text-sm px-2 py-1 bg-zinc-100 text-zinc-900 border border-zinc-900 rounded;
 }
 
 button:hover {
-  @apply bg-slate-200;
+	@apply bg-zinc-300;
 }
 
 .modal-overlay {
-  @apply fixed inset-0 overflow-y-auto w-full h-full hidden bg-slate-600 bg-opacity-70 z-30;
+	@apply fixed inset-0 overflow-y-auto w-full h-full hidden bg-slate-600 bg-opacity-70 z-30;
 }
 
 .dialog {
-  @apply relative top-20 w-72 mx-auto z-40 hidden bg-white p-2 rounded;
+	@apply relative top-20 w-72 mx-auto z-40 hidden bg-teal-800 text-white p-2  border border-zinc-900 rounded;
 }
 
 .dialog-header {
-  @apply px-2 py-1 bg-black text-white;
+	@apply px-2 py-1 bg-zinc-700 border border-zinc-900 rounded text-white;
 }
 
 .dialog-content {
-  @apply py-2;
+	@apply py-2;
 }
 
 .field {
-  @apply mb-2;
+	@apply mb-2;
 }
 
 .open {
-  @apply block;
+	@apply block;
+}
+
+.todo-card {
+	@apply flex justify-between px-2 py-1 mx-2 odd:bg-teal-600 odd:rounded;
+}
+
+#top-bar,
+#bottom-bar {
+	@apply m-2 p-2 bg-zinc-700 border border-zinc-900 rounded text-white;
 }
