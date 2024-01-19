@@ -14,6 +14,9 @@ import { buildHeaders } from "../lib/build-headers";
 import { randomUserPW } from "../lib/random-user";
 import TodoCard from "../components/todo-card";
 import UserButtons from "../components/user-buttons";
+import WelcomeMessage from "@/components/welcome-message";
+import EditUserDialog from "@/components/edit-user-dialog";
+import ChangePassWordDialog from "@/components/change-pass-word-dialog";
 
 export default function Home() {
   const { getItem, setItem, removeItem } = useStorage();
@@ -194,6 +197,58 @@ export default function Home() {
     }
   };
 
+  const showEditUser = () => openDialog("edit-user-dialog");
+
+  const hideEditUser = () => closeDialog("edit-user-dialog");
+
+  const updateUser = (ev: any) => {
+    const { UserName, Email } = ev;
+    if (session.Token && currentUser) {
+      const { Id } = currentUser;
+      fetch(`${baseUrl}/user/${Id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ UserName, Email }),
+        headers: buildHeaders(session),
+      }).then(() => {
+        hideEditUser();
+        signOut();
+      });
+    }
+  };
+
+  const showChangePassWord = () => openDialog("change-pass-word-dialog");
+
+  const hideChangePassWord = () => closeDialog("change-pass-word-dialog");
+
+  const changePassWord = (ev: any) => {
+    const { OldPassWord, NewPassWord, Confirmation } = ev;
+    if (session.Token) {
+      fetch(`${baseUrl}/user/change`, {
+        method: "PATCH",
+        body: JSON.stringify({ OldPassWord, NewPassWord, Confirmation }),
+        headers: buildHeaders(session),
+      }).then(() => {
+        reloadCurrentUser();
+        hideChangePassWord();
+      });
+    }
+  };
+
+  const reloadCurrentUser = () => {
+    if (session.Token) {
+      fetch(`${baseUrl}/user/current`, {
+        method: "GET",
+        headers: buildHeaders(session),
+      })
+        .then((result) => result.json())
+        .then((result) => {
+          if (result && result.Id) {
+            setCurrentUser(result);
+          }
+        });
+    }
+  };
+
   return (
     <main>
       <TopBar
@@ -211,17 +266,43 @@ export default function Home() {
           cancel={hideRandom}
           randomSignIn={randomSignIn}
         />
+        {currentUser && (
+          <EditUserDialog
+            currentUser={currentUser}
+            cancel={hideEditUser}
+            update={updateUser}
+          />
+        )}
+        {currentUser && !currentUser.Random && (
+          <ChangePassWordDialog
+            cancel={hideChangePassWord}
+            changePassWord={changePassWord}
+          />
+        )}
       </div>
       <div>
-        {currentUser && <UserButtons currentUser={currentUser} />}
-        {todos.map((todo) => (
-          <TodoCard
-            key={todo.Id}
-            todo={todo}
-            updateTodo={updateTodo}
-            deleteTodo={deleteTodo}
-          />
-        ))}
+        {session.SignedIn ? (
+          <>
+            {currentUser && (
+              <UserButtons
+                currentUser={currentUser}
+                showEditUser={showEditUser}
+                showChangePassWord={showChangePassWord}
+              />
+            )}
+            <button className="my-2 ml-2">Add ToDo</button>
+            {todos.map((todo) => (
+              <TodoCard
+                key={todo.Id}
+                todo={todo}
+                updateTodo={updateTodo}
+                deleteTodo={deleteTodo}
+              />
+            ))}
+          </>
+        ) : (
+          <WelcomeMessage />
+        )}
       </div>
     </main>
   );
