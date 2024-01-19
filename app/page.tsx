@@ -17,6 +17,7 @@ import UserButtons from "../components/user-buttons";
 import WelcomeMessage from "@/components/welcome-message";
 import EditUserDialog from "@/components/edit-user-dialog";
 import ChangePassWordDialog from "@/components/change-pass-word-dialog";
+import NewTodoDialog from "@/components/new-todo-dialog";
 
 export default function Home() {
   const { getItem, setItem, removeItem } = useStorage();
@@ -249,6 +250,24 @@ export default function Home() {
     }
   };
 
+  const showNewTodo = () => openDialog("new-todo-dialog");
+
+  const hideNewToDo = () => closeDialog("new-todo-dialog");
+
+  const addToDo = (ev: any) => {
+    const { Task, Completed } = ev;
+    if (session.Token) {
+      fetch(`${baseUrl}/todo`, {
+        method: "POST",
+        body: JSON.stringify({ Task, Completed }),
+        headers: buildHeaders(session),
+      }).then(() => {
+        reloadTodos();
+        hideNewToDo();
+      });
+    }
+  };
+
   return (
     <main>
       <TopBar
@@ -279,6 +298,9 @@ export default function Home() {
             changePassWord={changePassWord}
           />
         )}
+        {session.SignedIn && (
+          <NewTodoDialog cancel={hideNewToDo} addToDo={addToDo} />
+        )}
       </div>
       <div>
         {session.SignedIn ? (
@@ -290,7 +312,9 @@ export default function Home() {
                 showChangePassWord={showChangePassWord}
               />
             )}
-            <button className="my-2 ml-2">Add ToDo</button>
+            <button className="my-2 ml-2" onClick={showNewTodo}>
+              Add ToDo
+            </button>
             {todos.map((todo) => (
               <TodoCard
                 key={todo.Id}
